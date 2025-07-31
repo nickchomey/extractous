@@ -24,12 +24,6 @@
                 "en-US"
             ],
             "name": "sun.awt.resources.awt"
-        },
-        {
-            "locales": [
-                "en-GB"
-            ],
-            "name": "sun.awt.resources.awtosx"
         }
     ],
     "jni": [
@@ -43,10 +37,6 @@
                     "parameterTypes": []
                 },
                 {
-                    "name": "getMetadata",
-                    "parameterTypes": []
-                },
-                {
                     "name": "getReader",
                     "parameterTypes": []
                 },
@@ -56,6 +46,10 @@
                 },
                 {
                     "name": "isError",
+                    "parameterTypes": []
+                },
+                {
+                    "name": "getMetadata",
                     "parameterTypes": []
                 }
             ],
@@ -72,19 +66,34 @@
                     "parameterTypes": []
                 },
                 {
-                    "name": "getMetadata",
-                    "parameterTypes": []
-                },
-                {
                     "name": "getStatus",
                     "parameterTypes": []
                 },
                 {
                     "name": "isError",
                     "parameterTypes": []
+                },
+                {
+                    "name": "getMetadata",
+                    "parameterTypes": []
                 }
             ],
             "type": "ai.yobix.StringResult"
+        },
+        {
+            "methods": [
+                {
+                    "name": "getValues",
+                    "parameterTypes": [
+                        "java.lang.String"
+                    ]
+                },
+                {
+                    "name": "names",
+                    "parameterTypes": []
+                }
+            ],
+            "type": "org.apache.tika.metadata.Metadata"
         },
         {
             "methods": [
@@ -162,31 +171,6 @@
                 }
             ],
             "type": "ai.yobix.TikaNativeMain"
-        },
-        {
-            "methods": [
-                {
-                    "name": "handleNativeNotification",
-                    "parameterTypes": [
-                        "int"
-                    ]
-                }
-            ],
-            "type": "com.apple.eawt._AppEventHandler"
-        },
-        {
-            "methods": [
-                {
-                    "name": "initMenuStates",
-                    "parameterTypes": [
-                        "boolean",
-                        "boolean",
-                        "boolean",
-                        "boolean"
-                    ]
-                }
-            ],
-            "type": "com.apple.eawt._AppMenuBarHandler"
         },
         {
             "methods": [
@@ -306,11 +290,6 @@
             "type": "java.awt.AlphaComposite"
         },
         {
-            "fields": [
-                {
-                    "name": "value"
-                }
-            ],
             "methods": [
                 {
                     "name": "getRGB",
@@ -329,20 +308,6 @@
                 }
             ],
             "type": "java.awt.Dimension"
-        },
-        {
-            "methods": [
-                {
-                    "name": "<init>",
-                    "parameterTypes": [
-                        "int",
-                        "int",
-                        "int",
-                        "int"
-                    ]
-                }
-            ],
-            "type": "java.awt.DisplayMode"
         },
         {
             "methods": [
@@ -411,15 +376,6 @@
             "type": "java.awt.Toolkit"
         },
         {
-            "methods": [
-                {
-                    "name": "getButtonDownMasks",
-                    "parameterTypes": []
-                }
-            ],
-            "type": "java.awt.event.InputEvent"
-        },
-        {
             "fields": [
                 {
                     "name": "m00"
@@ -463,20 +419,6 @@
                 }
             ],
             "type": "java.awt.geom.Path2D$Float"
-        },
-        {
-            "methods": [
-                {
-                    "name": "<init>",
-                    "parameterTypes": [
-                        "double",
-                        "double",
-                        "double",
-                        "double"
-                    ]
-                }
-            ],
-            "type": "java.awt.geom.Rectangle2D$Double"
         },
         {
             "fields": [
@@ -674,12 +616,6 @@
         {
             "methods": [
                 {
-                    "name": "getProperty",
-                    "parameterTypes": [
-                        "java.lang.String"
-                    ]
-                },
-                {
                     "name": "load",
                     "parameterTypes": [
                         "java.lang.String"
@@ -738,21 +674,6 @@
                 }
             ],
             "type": "org.apache.commons.io.input.ReaderInputStream"
-        },
-        {
-            "methods": [
-                {
-                    "name": "getValues",
-                    "parameterTypes": [
-                        "java.lang.String"
-                    ]
-                },
-                {
-                    "name": "names",
-                    "parameterTypes": []
-                }
-            ],
-            "type": "org.apache.tika.metadata.Metadata"
         },
         {
             "methods": [
@@ -906,19 +827,6 @@
                 }
             ],
             "type": "org.apache.tika.parser.pdf.PDFParserConfig"
-        },
-        {
-            "methods": [
-                {
-                    "name": "notifyToolkitThreadBusy",
-                    "parameterTypes": []
-                },
-                {
-                    "name": "notifyToolkitThreadFree",
-                    "parameterTypes": []
-                }
-            ],
-            "type": "sun.awt.AWTAutoShutdown"
         },
         {
             "fields": [
@@ -1575,15 +1483,6 @@
                 }
             ],
             "type": "sun.java2d.xr.XRSurfaceData"
-        },
-        {
-            "methods": [
-                {
-                    "name": "installToolkitThreadInJava",
-                    "parameterTypes": []
-                }
-            ],
-            "type": "sun.lwawt.macosx.LWCToolkit"
         }
     ],
     "reflection": [
@@ -1606,15 +1505,6 @@
                     "parameterTypes": []
                 }
             ],
-            "type": "apple.security.AppleProvider"
-        },
-        {
-            "methods": [
-                {
-                    "name": "<init>",
-                    "parameterTypes": []
-                }
-            ],
             "type": "com.drew.metadata.exif.ExifIFD0Directory"
         },
         {
@@ -1625,6 +1515,15 @@
                 }
             ],
             "type": "com.drew.metadata.exif.ExifSubIFDDirectory"
+        },
+        {
+            "methods": [
+                {
+                    "name": "<init>",
+                    "parameterTypes": []
+                }
+            ],
+            "type": "com.fasterxml.jackson.databind.ext.Java7SupportImpl"
         },
         {
             "type": "com.github.jaiimageio.impl.common.PackageUtil"
@@ -5235,6 +5134,9 @@
                 }
             ],
             "type": "sun.security.x509.SubjectKeyIdentifierExtension"
+        },
+        {
+            "type": "jakarta.mail.MessagingException"
         }
     ],
     "resources": [
@@ -5944,7 +5846,7 @@
             "glob": "org/apache/xerces/impl/msg/SAXMessages_en.properties"
         },
         {
-            "glob": "org/apache/xerces/impl/msg/SAXMessages_en_GB.properties"
+            "glob": "org/apache/xerces/impl/msg/SAXMessages_en_US.properties"
         },
         {
             "glob": "org/apache/xmlbeans/impl/regex/message.properties"
@@ -5953,7 +5855,7 @@
             "glob": "org/apache/xmlbeans/impl/regex/message_en.properties"
         },
         {
-            "glob": "org/apache/xmlbeans/impl/regex/message_en_GB.properties"
+            "glob": "org/apache/xmlbeans/impl/regex/message_en_US.properties"
         },
         {
             "glob": "org/apache/xmlbeans/metadata/system/sXMLCONFIG/index.xsb"
@@ -5980,10 +5882,6 @@
             "glob": "org/slf4j/impl/StaticLoggerBinder.class"
         },
         {
-            "glob": "jdk/internal/icu/impl/data/icudt74b/nfc.nrm",
-            "module": "java.base"
-        },
-        {
             "glob": "jdk/internal/icu/impl/data/icudt74b/nfkc.nrm",
             "module": "java.base"
         },
@@ -6004,15 +5902,7 @@
             "module": "java.desktop"
         },
         {
-            "glob": "sun/awt/resources/awt_en_GB.properties",
-            "module": "java.desktop"
-        },
-        {
-            "glob": "sun/awt/resources/awtosx_en.properties",
-            "module": "java.desktop"
-        },
-        {
-            "glob": "sun/awt/resources/awtosx_en_GB.properties",
+            "glob": "sun/awt/resources/awt_en_US.properties",
             "module": "java.desktop"
         },
         {

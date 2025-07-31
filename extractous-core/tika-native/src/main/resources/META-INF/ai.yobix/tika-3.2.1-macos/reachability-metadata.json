@@ -24,6 +24,12 @@
                 "en-US"
             ],
             "name": "sun.awt.resources.awt"
+        },
+        {
+            "locales": [
+                "en-GB"
+            ],
+            "name": "sun.awt.resources.awtosx"
         }
     ],
     "jni": [
@@ -37,6 +43,10 @@
                     "parameterTypes": []
                 },
                 {
+                    "name": "getMetadata",
+                    "parameterTypes": []
+                },
+                {
                     "name": "getReader",
                     "parameterTypes": []
                 },
@@ -46,10 +56,6 @@
                 },
                 {
                     "name": "isError",
-                    "parameterTypes": []
-                },
-                {
-                    "name": "getMetadata",
                     "parameterTypes": []
                 }
             ],
@@ -66,34 +72,19 @@
                     "parameterTypes": []
                 },
                 {
+                    "name": "getMetadata",
+                    "parameterTypes": []
+                },
+                {
                     "name": "getStatus",
                     "parameterTypes": []
                 },
                 {
                     "name": "isError",
                     "parameterTypes": []
-                },
-                {
-                    "name": "getMetadata",
-                    "parameterTypes": []
                 }
             ],
             "type": "ai.yobix.StringResult"
-        },
-        {
-            "methods": [
-                {
-                    "name": "getValues",
-                    "parameterTypes": [
-                        "java.lang.String"
-                    ]
-                },
-                {
-                    "name": "names",
-                    "parameterTypes": []
-                }
-            ],
-            "type": "org.apache.tika.metadata.Metadata"
         },
         {
             "methods": [
@@ -171,6 +162,31 @@
                 }
             ],
             "type": "ai.yobix.TikaNativeMain"
+        },
+        {
+            "methods": [
+                {
+                    "name": "handleNativeNotification",
+                    "parameterTypes": [
+                        "int"
+                    ]
+                }
+            ],
+            "type": "com.apple.eawt._AppEventHandler"
+        },
+        {
+            "methods": [
+                {
+                    "name": "initMenuStates",
+                    "parameterTypes": [
+                        "boolean",
+                        "boolean",
+                        "boolean",
+                        "boolean"
+                    ]
+                }
+            ],
+            "type": "com.apple.eawt._AppMenuBarHandler"
         },
         {
             "methods": [
@@ -281,20 +297,6 @@
         {
             "fields": [
                 {
-                    "name": "bdata"
-                },
-                {
-                    "name": "consumed"
-                },
-                {
-                    "name": "id"
-                }
-            ],
-            "type": "java.awt.AWTEvent"
-        },
-        {
-            "fields": [
-                {
                     "name": "extraAlpha"
                 },
                 {
@@ -304,6 +306,11 @@
             "type": "java.awt.AlphaComposite"
         },
         {
+            "fields": [
+                {
+                    "name": "value"
+                }
+            ],
             "methods": [
                 {
                     "name": "getRGB",
@@ -311,71 +318,6 @@
                 }
             ],
             "type": "java.awt.Color"
-        },
-        {
-            "fields": [
-                {
-                    "name": "appContext"
-                },
-                {
-                    "name": "background"
-                },
-                {
-                    "name": "cursor"
-                },
-                {
-                    "name": "enabled"
-                },
-                {
-                    "name": "focusable"
-                },
-                {
-                    "name": "foreground"
-                },
-                {
-                    "name": "graphicsConfig"
-                },
-                {
-                    "name": "height"
-                },
-                {
-                    "name": "parent"
-                },
-                {
-                    "name": "peer"
-                },
-                {
-                    "name": "visible"
-                },
-                {
-                    "name": "width"
-                },
-                {
-                    "name": "x"
-                },
-                {
-                    "name": "y"
-                }
-            ],
-            "methods": [
-                {
-                    "name": "getFont_NoClientCode",
-                    "parameterTypes": []
-                },
-                {
-                    "name": "getLocationOnScreen_NoTreeLock",
-                    "parameterTypes": []
-                },
-                {
-                    "name": "getToolkitImpl",
-                    "parameterTypes": []
-                },
-                {
-                    "name": "isEnabledImpl",
-                    "parameterTypes": []
-                }
-            ],
-            "type": "java.awt.Component"
         },
         {
             "fields": [
@@ -389,33 +331,27 @@
             "type": "java.awt.Dimension"
         },
         {
-            "fields": [
-                {
-                    "name": "name"
-                },
-                {
-                    "name": "pData"
-                },
-                {
-                    "name": "size"
-                },
-                {
-                    "name": "style"
-                }
-            ],
             "methods": [
                 {
-                    "name": "getFont",
+                    "name": "<init>",
                     "parameterTypes": [
-                        "java.lang.String"
+                        "int",
+                        "int",
+                        "int",
+                        "int"
                     ]
-                },
+                }
+            ],
+            "type": "java.awt.DisplayMode"
+        },
+        {
+            "methods": [
                 {
-                    "name": "getFontPeer",
+                    "name": "isHeadless",
                     "parameterTypes": []
                 }
             ],
-            "type": "java.awt.Font"
+            "type": "java.awt.GraphicsEnvironment"
         },
         {
             "fields": [
@@ -448,6 +384,20 @@
         {
             "methods": [
                 {
+                    "name": "<init>",
+                    "parameterTypes": [
+                        "int",
+                        "int",
+                        "int",
+                        "int"
+                    ]
+                }
+            ],
+            "type": "java.awt.Rectangle"
+        },
+        {
+            "methods": [
+                {
                     "name": "getDefaultToolkit",
                     "parameterTypes": []
                 },
@@ -461,28 +411,6 @@
             "type": "java.awt.Toolkit"
         },
         {
-            "fields": [
-                {
-                    "name": "CONSOLE"
-                },
-                {
-                    "name": "LOCK"
-                },
-                {
-                    "name": "REMOTE"
-                },
-                {
-                    "name": "UNSPECIFIED"
-                }
-            ],
-            "type": "java.awt.desktop.UserSessionEvent$Reason"
-        },
-        {
-            "fields": [
-                {
-                    "name": "modifiers"
-                }
-            ],
             "methods": [
                 {
                     "name": "getButtonDownMasks",
@@ -535,6 +463,20 @@
                 }
             ],
             "type": "java.awt.geom.Path2D$Float"
+        },
+        {
+            "methods": [
+                {
+                    "name": "<init>",
+                    "parameterTypes": [
+                        "double",
+                        "double",
+                        "double",
+                        "double"
+                    ]
+                }
+            ],
+            "type": "java.awt.geom.Rectangle2D$Double"
         },
         {
             "fields": [
@@ -730,6 +672,32 @@
             "type": "java.lang.Boolean"
         },
         {
+            "methods": [
+                {
+                    "name": "getProperty",
+                    "parameterTypes": [
+                        "java.lang.String"
+                    ]
+                },
+                {
+                    "name": "load",
+                    "parameterTypes": [
+                        "java.lang.String"
+                    ]
+                }
+            ],
+            "type": "java.lang.System"
+        },
+        {
+            "methods": [
+                {
+                    "name": "yield",
+                    "parameterTypes": []
+                }
+            ],
+            "type": "java.lang.Thread"
+        },
+        {
             "fields": [
                 {
                     "name": "lengths"
@@ -770,6 +738,21 @@
                 }
             ],
             "type": "org.apache.commons.io.input.ReaderInputStream"
+        },
+        {
+            "methods": [
+                {
+                    "name": "getValues",
+                    "parameterTypes": [
+                        "java.lang.String"
+                    ]
+                },
+                {
+                    "name": "names",
+                    "parameterTypes": []
+                }
+            ],
+            "type": "org.apache.tika.metadata.Metadata"
         },
         {
             "methods": [
@@ -948,7 +931,25 @@
         {
             "methods": [
                 {
-                    "name": "isTouchKeyboardAutoShowEnabled",
+                    "name": "awtLock",
+                    "parameterTypes": []
+                },
+                {
+                    "name": "awtLockNotify",
+                    "parameterTypes": []
+                },
+                {
+                    "name": "awtLockNotifyAll",
+                    "parameterTypes": []
+                },
+                {
+                    "name": "awtLockWait",
+                    "parameterTypes": [
+                        "long"
+                    ]
+                },
+                {
+                    "name": "awtUnlock",
                     "parameterTypes": []
                 }
             ],
@@ -957,13 +958,24 @@
         {
             "methods": [
                 {
-                    "name": "dwmCompositionChanged",
+                    "name": "init",
                     "parameterTypes": [
-                        "boolean"
+                        "long"
                     ]
                 }
             ],
-            "type": "sun.awt.Win32GraphicsEnvironment"
+            "type": "sun.awt.X11.XErrorHandlerUtil"
+        },
+        {
+            "fields": [
+                {
+                    "name": "modLockIsShiftLock"
+                },
+                {
+                    "name": "numLockMask"
+                }
+            ],
+            "type": "sun.awt.X11.XToolkit"
         },
         {
             "fields": [
@@ -1051,103 +1063,6 @@
                 }
             ],
             "type": "sun.awt.image.IntegerComponentRaster"
-        },
-        {
-            "fields": [
-                {
-                    "name": "volSurfaceManager"
-                }
-            ],
-            "type": "sun.awt.image.SunVolatileImage"
-        },
-        {
-            "fields": [
-                {
-                    "name": "sdCurrent"
-                }
-            ],
-            "type": "sun.awt.image.VolatileSurfaceManager"
-        },
-        {
-            "fields": [
-                {
-                    "name": "hwnd"
-                },
-                {
-                    "name": "winGraphicsConfig"
-                }
-            ],
-            "methods": [
-                {
-                    "name": "disposeLater",
-                    "parameterTypes": []
-                },
-                {
-                    "name": "replaceSurfaceData",
-                    "parameterTypes": []
-                },
-                {
-                    "name": "replaceSurfaceDataLater",
-                    "parameterTypes": []
-                }
-            ],
-            "type": "sun.awt.windows.WComponentPeer"
-        },
-        {
-            "methods": [
-                {
-                    "name": "systemSleepCallback",
-                    "parameterTypes": [
-                        "boolean"
-                    ]
-                },
-                {
-                    "name": "userSessionCallback",
-                    "parameterTypes": [
-                        "boolean",
-                        "java.awt.desktop.UserSessionEvent$Reason"
-                    ]
-                }
-            ],
-            "type": "sun.awt.windows.WDesktopPeer"
-        },
-        {
-            "fields": [
-                {
-                    "name": "createError"
-                },
-                {
-                    "name": "destroyed"
-                },
-                {
-                    "name": "pData"
-                },
-                {
-                    "name": "target"
-                }
-            ],
-            "methods": [
-                {
-                    "name": "getPeerForTarget",
-                    "parameterTypes": [
-                        "java.lang.Object"
-                    ]
-                }
-            ],
-            "type": "sun.awt.windows.WObjectPeer"
-        },
-        {
-            "methods": [
-                {
-                    "name": "displayChanged",
-                    "parameterTypes": []
-                },
-                {
-                    "name": "windowsSettingChange",
-                    "parameterTypes": []
-                }
-            ],
-            "type": "sun.awt.windows.WToolkit"
         },
         {
             "methods": [
@@ -1653,47 +1568,31 @@
         {
             "fields": [
                 {
-                    "name": "d3dEnabled"
+                    "name": "picture"
                 },
                 {
-                    "name": "d3dSet"
-                },
-                {
-                    "name": "offscreenSharingEnabled"
-                },
-                {
-                    "name": "setHighDPIAware"
+                    "name": "xid"
                 }
             ],
-            "type": "sun.java2d.windows.WindowsFlags"
+            "type": "sun.java2d.xr.XRSurfaceData"
         },
         {
-            "fields": [
-                {
-                    "name": "isStaticMain"
-                },
-                {
-                    "name": "noArgMain"
-                }
-            ],
             "methods": [
                 {
-                    "name": "getApplicationClass",
+                    "name": "installToolkitThreadInJava",
                     "parameterTypes": []
                 }
             ],
-            "type": "sun.launcher.LauncherHelper"
+            "type": "sun.lwawt.macosx.LWCToolkit"
         },
         {
             "methods": [
                 {
-                    "name": "main",
-                    "parameterTypes": [
-                        "java.lang.String[]"
-                    ]
+                    "name": "<init>",
+                    "parameterTypes": []
                 }
             ],
-            "type": "worker.org.gradle.process.internal.worker.GradleWorkerMain"
+            "type": "jakarta.mail.MessagingException"
         }
     ],
     "reflection": [
@@ -1708,6 +1607,15 @@
         },
         {
             "type": "[Lorg.openxmlformats.schemas.presentationml.x2006.main.CTGroupShape;"
+        },
+        {
+            "methods": [
+                {
+                    "name": "<init>",
+                    "parameterTypes": []
+                }
+            ],
+            "type": "apple.security.AppleProvider"
         },
         {
             "methods": [
@@ -4979,17 +4887,6 @@
             "methods": [
                 {
                     "name": "<init>",
-                    "parameterTypes": [
-                        "java.security.SecureRandomParameters"
-                    ]
-                }
-            ],
-            "type": "sun.security.provider.DRBG"
-        },
-        {
-            "methods": [
-                {
-                    "name": "<init>",
                     "parameterTypes": []
                 }
             ],
@@ -5048,6 +4945,17 @@
                 }
             ],
             "type": "sun.security.provider.MD5"
+        },
+        {
+            "methods": [
+                {
+                    "name": "<init>",
+                    "parameterTypes": [
+                        "java.security.SecureRandomParameters"
+                    ]
+                }
+            ],
+            "type": "sun.security.provider.NativePRNG"
         },
         {
             "methods": [
@@ -5336,6 +5244,9 @@
                 }
             ],
             "type": "sun.security.x509.SubjectKeyIdentifierExtension"
+        },
+        {
+            "type": "jakarta.mail.MessagingException"
         }
     ],
     "resources": [
@@ -6045,7 +5956,7 @@
             "glob": "org/apache/xerces/impl/msg/SAXMessages_en.properties"
         },
         {
-            "glob": "org/apache/xerces/impl/msg/SAXMessages_en_US.properties"
+            "glob": "org/apache/xerces/impl/msg/SAXMessages_en_GB.properties"
         },
         {
             "glob": "org/apache/xmlbeans/impl/regex/message.properties"
@@ -6054,7 +5965,7 @@
             "glob": "org/apache/xmlbeans/impl/regex/message_en.properties"
         },
         {
-            "glob": "org/apache/xmlbeans/impl/regex/message_en_US.properties"
+            "glob": "org/apache/xmlbeans/impl/regex/message_en_GB.properties"
         },
         {
             "glob": "org/apache/xmlbeans/metadata/system/sXMLCONFIG/index.xsb"
@@ -6081,6 +5992,10 @@
             "glob": "org/slf4j/impl/StaticLoggerBinder.class"
         },
         {
+            "glob": "jdk/internal/icu/impl/data/icudt74b/nfc.nrm",
+            "module": "java.base"
+        },
+        {
             "glob": "jdk/internal/icu/impl/data/icudt74b/nfkc.nrm",
             "module": "java.base"
         },
@@ -6101,7 +6016,15 @@
             "module": "java.desktop"
         },
         {
-            "glob": "sun/awt/resources/awt_en_US.properties",
+            "glob": "sun/awt/resources/awt_en_GB.properties",
+            "module": "java.desktop"
+        },
+        {
+            "glob": "sun/awt/resources/awtosx_en.properties",
+            "module": "java.desktop"
+        },
+        {
+            "glob": "sun/awt/resources/awtosx_en_GB.properties",
             "module": "java.desktop"
         },
         {

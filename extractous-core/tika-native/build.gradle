@@ -4,7 +4,7 @@ plugins {
 }
 
 
-def tikaVersion = "2.9.2"
+def tikaVersion = "3.2.1"
 def numThreads = Runtime.getRuntime().availableProcessors()
 def currentOs = org.gradle.internal.os.OperatingSystem.current()
 
@@ -34,7 +34,7 @@ dependencies {
     implementation 'org.apache.logging.log4j:log4j-to-slf4j:3.0.0-beta2'
 
     implementation("org.apache.tika:tika-core:$tikaVersion")
-    implementation "org.apache.tika:tika-parsers-standard:$tikaVersion" // Apache Tika parsers
+    implementation "org.apache.tika:tika-parsers-standard-package:$tikaVersion" // Apache Tika parsers
 
     implementation("org.apache.tika:tika-parser-microsoft-module:$tikaVersion")
     implementation "org.apache.tika:tika-parser-pdf-module:$tikaVersion"
@@ -44,7 +44,8 @@ dependencies {
     implementation "org.apache.tika:tika-parser-cad-module:$tikaVersion"
     implementation "org.apache.tika:tika-parser-crypto-module:$tikaVersion"
     implementation "org.apache.tika:tika-parser-font-module:$tikaVersion"
-    implementation "org.apache.tika:tika-parser-html-commons:$tikaVersion"
+    // no longer required in newer versions of tika
+    // implementation "org.apache.tika:tika-parser-html-commons:$tikaVersion"
     implementation "org.apache.tika:tika-parser-image-module:$tikaVersion"
     implementation "org.apache.tika:tika-parser-mail-module:$tikaVersion"
     implementation "org.apache.tika:tika-parser-miscoffice-module:$tikaVersion"
@@ -54,9 +55,21 @@ dependencies {
     implementation "org.apache.tika:tika-parser-text-module:$tikaVersion"
     implementation "org.apache.tika:tika-parser-xml-module:$tikaVersion"
     implementation "org.apache.tika:tika-parser-webarchive-module:$tikaVersion"
+    implementation "jakarta.mail:jakarta.mail-api:2.1.2"
 }
 
 graalvmNative {
+    // agent {
+    //     defaultMode = "standard"
+    //     metadataCopy {
+    //         mergeWithExisting = true
+    //         inputTaskNames.add("build")
+    //         outputDirectories.add("src/main/resources/META-INF/native-image/ai.yobix")
+    //     }
+    // }
+    metadataRepository { 
+        enabled = true 
+    }
     // Make sure this is off to use the same GraalVM version thant the one used by gradle
     // Setting the version is left outside of this script in github workflow or developer build environment
     toolchainDetection = false
@@ -79,7 +92,7 @@ graalvmNative {
             buildArgs.addAll(
                     "-H:+AddAllCharsets", // Very important to get UTF8 working
                     "--enable-https", // Very important https working
-                    "-O3",
+                    "-Ob",
                     "--parallelism=$numThreads",
                     "-march=compatibility" // VERY IMPORTANT to use compatibility flag. If not the libs will use the cpu arch of the build machine and will notwork on other CPUs if distributed
             )
