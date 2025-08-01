@@ -58,13 +58,35 @@ dependencies {
     implementation "jakarta.mail:jakarta.mail-api:2.1.2"
 }
 
+tasks.register('runAgent', JavaExec) {
+    dependsOn classes                      // ensure byte-code is built
+    group = 'verification'
+    description = 'Runs Tika with the native-image agent to generate GraalVM configs'
+
+    mainClass = 'ai.yobix.AgentRunner'
+    classpath = sourceSets.main.runtimeClasspath
+
+    // --- file you want to analyse -----
+    // If a file fails to parse, we should pass it here to generate metadata for it, 
+    // then merge that metadata into existing.
+    args '../../test_files/documents/vodafone.xlsx'
+
+    // --- GraalVM agent  ---------------
+    jvmArgs "-agentlib:native-image-agent=config-output-dir=graal-agent"
+}
+
 graalvmNative {
+    // The merge option didn't work as expected so currently not using it
+    // It should work by running `.gradlew -Pagent runAgent` which should generate metadata
+    // in the `graal-agent` directory. We should then be able to merge that metadata into the 
+    // `src/main/resources/META-INF/$group/$version` directory, but the merge didn't include the new metadata.
+    // Likely user error.
     // agent {
     //     defaultMode = "standard"
     //     metadataCopy {
     //         mergeWithExisting = true
-    //         inputTaskNames.add("build")
-    //         outputDirectories.add("src/main/resources/META-INF/native-image/ai.yobix")
+    //         inputTaskNames.add("runAgent")
+    //         outputDirectories.add("src/main/resources/META-INF/$group/$version")
     //     }
     // }
     metadataRepository { 
