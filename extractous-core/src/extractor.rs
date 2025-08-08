@@ -36,7 +36,7 @@ pub enum CharSet {
 /// ```
 ///
 pub struct StreamReader {
-    pub(crate) inner: JReaderInputStream,
+    pub(crate) inner: JReaderInputStream<'static>,
 }
 
 impl std::io::Read for StreamReader {
@@ -202,7 +202,6 @@ impl Extractor {
             self.xml_output,
         )
     }
-
 }
 
 #[cfg(test)]
