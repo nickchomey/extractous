@@ -36,7 +36,7 @@ pub enum CharSet {
 /// ```
 ///
 pub struct StreamReader {
-    pub(crate) inner: JReaderInputStream<'static>,
+    pub(crate) inner: JReaderInputStream,
 }
 
 impl std::io::Read for StreamReader {

@@ -13,15 +13,16 @@ use jni::{AttachGuard, JNIEnv};
 /// Wrapper for [`JObject`]s that contain `org.apache.commons.io.input.ReaderInputStream`
 /// It saves a GlobalRef to the java object, which is cleared when the last GlobalRef is dropped
 /// Implements [`Drop] trait to properly close the `org.apache.commons.io.input.ReaderInputStream`
-pub struct JReaderInputStream<'local> {
+pub struct JReaderInputStream {
     internal: GlobalRef,
     buffer: GlobalRef,
     capacity: jsize,
-    _guard: AttachGuard<'local>,
+    #[cfg(feature = "stream-attachguard")]
+    _guard: AttachGuard<'static>,
 }
 
-impl<'local> JReaderInputStream<'local> {
-    pub(crate) fn new(guard: AttachGuard<'local>, obj: JObject<'local>) -> ExtractResult<Self> {
+impl JReaderInputStream {
+    pub(crate) fn new(guard: AttachGuard<'static>, obj: JObject<'_>) -> ExtractResult<Self> {
         // Creates new jbyte array
         let capacity = DEFAULT_BUF_SIZE as jsize;
         let jbyte_array = guard.new_byte_array(capacity)?;
@@ -30,6 +31,7 @@ impl<'local> JReaderInputStream<'local> {
             internal: guard.new_global_ref(obj)?,
             buffer: guard.new_global_ref(jbyte_array)?,
             capacity,
+            #[cfg(feature = "stream-attachguard")]
             _guard: guard,
         })
     }
@@ -94,7 +96,7 @@ impl<'local> JReaderInputStream<'local> {
     }
 }
 
-impl Drop for JReaderInputStream<'_> {
+impl Drop for JReaderInputStream {
     fn drop(&mut self) {
         if let Ok(mut env) = vm().attach_current_thread() {
             // Call the Java Reader's `close` method
