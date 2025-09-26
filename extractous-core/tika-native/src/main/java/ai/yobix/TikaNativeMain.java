@@ -353,4 +353,47 @@ public class TikaNativeMain {
         }
     }
 
+    /**
+     * Extracts all embedded documents/resources from a file (images, attachments, etc.)
+     * This is similar to Tika Server's /unpack/all endpoint
+     * 
+     * @param filePath the path of the file to extract embedded content from
+     * @return EmbeddedExtractResult containing all embedded documents
+     */
+    public static EmbeddedExtractResult extractEmbedded(
+            String filePath,
+            PDFParserConfig pdfConfig,
+            OfficeParserConfig officeConfig,
+            TesseractOCRConfig tesseractConfig
+    ) {
+        return new EmbeddedExtractResult((byte) 99, "Embedded extraction not yet implemented on tika3.2 branch");
+    }
+
+    /**
+     * Extracts all embedded documents/resources from a byte buffer
+     * 
+     * @param data the byte buffer containing the document
+     * @return EmbeddedExtractResult containing all embedded documents
+     */
+    public static EmbeddedExtractResult extractEmbeddedFromBytes(
+            ByteBuffer data,
+            PDFParserConfig pdfConfig,
+            OfficeParserConfig officeConfig,
+            TesseractOCRConfig tesseractConfig
+    ) {
+        return new EmbeddedExtractResult((byte) 99, "Embedded extraction from bytes not yet implemented on tika3.2 branch");
+    }
+
+    /**
+     * Optimized extraction method placeholder
+     */
+    public static OptimizedEmbeddedExtractor.OptimizedResult extractEmbeddedOptimized(
+            String filePath,
+            PDFParserConfig pdfConfig,
+            OfficeParserConfig officeConfig,
+            TesseractOCRConfig tesseractConfig
+    ) {
+        return new OptimizedEmbeddedExtractor.OptimizedResult((byte) 99, "Optimized extraction not yet implemented on tika3.2 branch");
+    }
+
 }
