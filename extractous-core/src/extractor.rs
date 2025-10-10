@@ -206,7 +206,10 @@ impl Extractor {
     /// Extracts all embedded documents/resources from a file (images, attachments, etc.).
     /// This is similar to Apache Tika Server's /unpack/all endpoint.
     /// Returns an EmbeddedExtractResult containing all embedded documents.
-    pub fn extract_embedded_from_file(&self, file_path: &str) -> ExtractResult<crate::EmbeddedExtractResult> {
+    pub fn extract_embedded_from_file(
+        &self,
+        file_path: &str,
+    ) -> ExtractResult<crate::EmbeddedExtractResult> {
         tika::extract_embedded_from_file(
             file_path,
             &self.pdf_config,
@@ -217,7 +220,10 @@ impl Extractor {
 
     /// Extracts all embedded documents/resources from a byte buffer.
     /// Returns an EmbeddedExtractResult containing all embedded documents.
-    pub fn extract_embedded_from_bytes(&self, buffer: &[u8]) -> ExtractResult<crate::EmbeddedExtractResult> {
+    pub fn extract_embedded_from_bytes(
+        &self,
+        buffer: &[u8],
+    ) -> ExtractResult<crate::EmbeddedExtractResult> {
         tika::extract_embedded_from_bytes(
             buffer,
             &self.pdf_config,
@@ -228,7 +234,10 @@ impl Extractor {
 
     /// OPTIMIZED: Extracts embedded documents using a single JNI call for better performance.
     /// Use this for files with many embedded documents (e.g., PDFs with thousands of images).
-    pub fn extract_embedded_optimized(&self, file_path: &str) -> ExtractResult<crate::EmbeddedExtractResult> {
+    pub fn extract_embedded_optimized(
+        &self,
+        file_path: &str,
+    ) -> ExtractResult<crate::EmbeddedExtractResult> {
         tika::extract_embedded_optimized(
             file_path,
             &self.pdf_config,
@@ -239,7 +248,10 @@ impl Extractor {
 
     /// BATCH OPTIMIZED: Extracts embedded documents using batched JNI operations.
     /// This reduces JNI overhead by processing documents in batches.
-    pub fn extract_embedded_batch(&self, file_path: &str) -> ExtractResult<crate::EmbeddedExtractResult> {
+    pub fn extract_embedded_batch(
+        &self,
+        file_path: &str,
+    ) -> ExtractResult<crate::EmbeddedExtractResult> {
         tika::extract_embedded_batch(
             file_path,
             &self.pdf_config,
@@ -251,7 +263,7 @@ impl Extractor {
     /// Extracts embedded documents in batches using a callback for streaming processing.
     /// This is useful for very large files to avoid memory issues.
     pub fn extract_embedded_streaming<F>(
-        &self, 
+        &self,
         file_path: &str,
         batch_size: usize,
         callback: F,
@@ -268,7 +280,6 @@ impl Extractor {
             callback,
         )
     }
-
 }
 
 #[cfg(test)]

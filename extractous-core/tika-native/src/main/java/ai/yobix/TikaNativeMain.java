@@ -1,22 +1,29 @@
 package ai.yobix;
 
 import org.apache.commons.io.input.ReaderInputStream;
+import org.apache.commons.io.IOUtils;
 import org.apache.tika.Tika;
 import org.apache.tika.config.TikaConfig;
 import org.apache.tika.exception.TikaException;
 import org.apache.tika.exception.WriteLimitReachedException;
+import org.apache.tika.extractor.EmbeddedDocumentExtractor;
 import org.apache.tika.io.TemporaryResources;
 import org.apache.tika.io.TikaInputStream;
 import org.apache.tika.metadata.Metadata;
+import org.apache.tika.metadata.TikaCoreProperties;
+import org.apache.tika.metadata.HttpHeaders;
 import org.apache.tika.parser.AutoDetectParser;
 import org.apache.tika.parser.ParseContext;
 import org.apache.tika.parser.Parser;
 import org.apache.tika.parser.microsoft.OfficeParserConfig;
 import org.apache.tika.parser.ocr.TesseractOCRConfig;
 import org.apache.tika.parser.pdf.PDFParserConfig;
+import org.apache.tika.parser.RecursiveParserWrapper;
 import org.apache.tika.sax.BodyContentHandler;
 import org.apache.tika.sax.ToXMLContentHandler;
 import org.apache.tika.sax.WriteOutContentHandler;
+import org.apache.tika.sax.BasicContentHandlerFactory;
+import org.apache.tika.sax.RecursiveParserWrapperHandler;
 import org.graalvm.nativeimage.IsolateThread;
 import org.graalvm.nativeimage.c.function.CEntryPoint;
 import org.graalvm.nativeimage.c.type.CCharPointer;
@@ -37,6 +44,9 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
+import java.util.ArrayList;
+import java.io.ByteArrayOutputStream;
 
 public class TikaNativeMain {
 
@@ -366,7 +376,15 @@ public class TikaNativeMain {
             OfficeParserConfig officeConfig,
             TesseractOCRConfig tesseractConfig
     ) {
-        return new EmbeddedExtractResult((byte) 99, "Embedded extraction not yet implemented on tika3.2 branch");
+        try {
+            final Path path = Paths.get(filePath);
+            final Metadata metadata = new Metadata();
+            final TikaInputStream stream = TikaInputStream.get(path, metadata);
+            
+            return extractEmbeddedFromStream(stream, metadata, pdfConfig, officeConfig, tesseractConfig);
+        } catch (IOException e) {
+            return new EmbeddedExtractResult((byte) 1, "Could not open file: " + e.getMessage());
+        }
     }
 
     /**
@@ -381,11 +399,15 @@ public class TikaNativeMain {
             OfficeParserConfig officeConfig,
             TesseractOCRConfig tesseractConfig
     ) {
-        return new EmbeddedExtractResult((byte) 99, "Embedded extraction from bytes not yet implemented on tika3.2 branch");
+        final Metadata metadata = new Metadata();
+        final ByteBufferInputStream inStream = new ByteBufferInputStream(data);
+        final TikaInputStream stream = TikaInputStream.get(inStream, new TemporaryResources(), metadata);
+        
+        return extractEmbeddedFromStream(stream, metadata, pdfConfig, officeConfig, tesseractConfig);
     }
 
     /**
-     * Optimized extraction method placeholder
+     * Optimized extraction method that packs all data into a single ByteBuffer
      */
     public static OptimizedEmbeddedExtractor.OptimizedResult extractEmbeddedOptimized(
             String filePath,
@@ -393,7 +415,107 @@ public class TikaNativeMain {
             OfficeParserConfig officeConfig,
             TesseractOCRConfig tesseractConfig
     ) {
-        return new OptimizedEmbeddedExtractor.OptimizedResult((byte) 99, "Optimized extraction not yet implemented on tika3.2 branch");
+        // Use the OptimizedEmbeddedExtractor with a reasonable document limit
+        return OptimizedEmbeddedExtractor.extractEmbeddedOptimized(
+            filePath, 
+            pdfConfig, 
+            officeConfig, 
+            tesseractConfig,
+            1000 // Maximum 1000 embedded documents
+        );
+    }
+    
+    /**
+     * Shared helper method to extract embedded documents from a stream
+     */
+    private static EmbeddedExtractResult extractEmbeddedFromStream(
+            TikaInputStream stream,
+            Metadata metadata,
+            PDFParserConfig pdfConfig,
+            OfficeParserConfig officeConfig,
+            TesseractOCRConfig tesseractConfig
+    ) {
+        final List<EmbeddedExtractResult.EmbeddedDocument> embeddedDocuments = new ArrayList<>();
+        
+        try {
+            final TikaConfig config = TikaConfig.getDefaultConfig();
+            final ParseContext parseContext = new ParseContext();
+            final Parser baseParser = new AutoDetectParser(config);
+            
+            // Configure parse context
+            parseContext.set(Parser.class, baseParser);
+            parseContext.set(PDFParserConfig.class, pdfConfig);
+            parseContext.set(OfficeParserConfig.class, officeConfig);
+            parseContext.set(TesseractOCRConfig.class, tesseractConfig);
+            
+            // Custom embedded document extractor
+            EmbeddedDocumentExtractor embeddedExtractor = new EmbeddedDocumentExtractor() {
+                @Override
+                public boolean shouldParseEmbedded(Metadata metadata) {
+                    return true; // Extract all embedded documents
+                }
+                
+                @Override
+                public void parseEmbedded(
+                        InputStream inputStream,
+                        ContentHandler contentHandler,
+                        Metadata embeddedMetadata,
+                        boolean outputHtml) throws SAXException, IOException {
+                    
+                    // Get metadata
+                    String resourceName = embeddedMetadata.get(TikaCoreProperties.RESOURCE_NAME_KEY);
+                    String contentType = embeddedMetadata.get(HttpHeaders.CONTENT_TYPE);
+                    String embeddedRelationshipId = embeddedMetadata.get(TikaCoreProperties.EMBEDDED_RELATIONSHIP_ID);
+                    
+                    // Default values if metadata is missing
+                    if (resourceName == null) {
+                        resourceName = "embedded_" + embeddedDocuments.size();
+                    }
+                    if (contentType == null) {
+                        contentType = "application/octet-stream";
+                    }
+                    
+                    // Read content into byte array
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                    IOUtils.copy(inputStream, baos);
+                    byte[] content = baos.toByteArray();
+                    
+                    // Create embedded document
+                    embeddedDocuments.add(new EmbeddedExtractResult.EmbeddedDocument(
+                        resourceName,
+                        contentType,
+                        content,
+                        embeddedRelationshipId
+                    ));
+                }
+            };
+            
+            parseContext.set(EmbeddedDocumentExtractor.class, embeddedExtractor);
+            
+            // Use RecursiveParserWrapper to extract all embedded content
+            RecursiveParserWrapper wrapper = new RecursiveParserWrapper(baseParser);
+            BasicContentHandlerFactory factory = new BasicContentHandlerFactory(
+                BasicContentHandlerFactory.HANDLER_TYPE.TEXT, -1);
+            RecursiveParserWrapperHandler handler = new RecursiveParserWrapperHandler(factory);
+            
+            wrapper.parse(stream, handler, metadata, parseContext);
+            
+            return new EmbeddedExtractResult(embeddedDocuments);
+            
+        } catch (IOException e) {
+            return new EmbeddedExtractResult((byte) 1, "IO error occurred: " + e.getMessage());
+        } catch (SAXException e) {
+            return new EmbeddedExtractResult((byte) 2, "SAX error occurred: " + e.getMessage());
+        } catch (TikaException e) {
+            return new EmbeddedExtractResult((byte) 3, "Tika error occurred: " + e.getMessage());
+        } catch (Exception e) {
+            return new EmbeddedExtractResult((byte) 99, "Unexpected error: " + e.getClass().getName() + ": " + e.getMessage());
+        } finally {
+            try {
+                stream.close();
+            } catch (IOException ignored) {
+            }
+        }
     }
 
 }

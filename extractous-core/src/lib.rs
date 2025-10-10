@@ -90,12 +90,12 @@ mod tika {
     mod jni_utils;
     mod parse;
     mod parse_embedded;
-    mod parse_embedded_optimized;
     mod parse_embedded_batch;
+    mod parse_embedded_optimized;
     mod wrappers;
     pub use parse::*;
     pub use parse_embedded::*;
-    pub use parse_embedded_optimized::*;
     pub use parse_embedded_batch::*;
+    pub use parse_embedded_optimized::*;
     pub use wrappers::JReaderInputStream;
 }
