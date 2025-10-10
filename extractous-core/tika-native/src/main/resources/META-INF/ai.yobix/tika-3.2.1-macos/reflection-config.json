@@ -18,5 +18,20 @@
     "allDeclaredFields": true,
     "allDeclaredMethods": true,
     "allDeclaredConstructors": true
+  },
+  {
+    "name": "java.nio.ByteBuffer",
+    "allDeclaredMethods": true,
+    "allPublicMethods": true
+  },
+  {
+    "name": "java.nio.DirectByteBuffer", 
+    "allDeclaredMethods": true,
+    "allPublicMethods": true
+  },
+  {
+    "name": "java.nio.HeapByteBuffer",
+    "allDeclaredMethods": true,
+    "allPublicMethods": true
   }
 ]

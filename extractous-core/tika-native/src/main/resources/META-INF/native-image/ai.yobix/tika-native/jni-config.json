@@ -101,7 +101,9 @@
       {"name": "capacity", "parameterTypes": []},
       {"name": "position", "parameterTypes": []},
       {"name": "remaining", "parameterTypes": []},
-      {"name": "allocateDirect", "parameterTypes": ["int"]}
+      {"name": "allocateDirect", "parameterTypes": ["int"]},
+      {"name": "rewind", "parameterTypes": []},
+      {"name": "get", "parameterTypes": ["[B"]}
     ]
   },
   {
@@ -109,7 +111,18 @@
     "methods": [
       {"name": "capacity", "parameterTypes": []},
       {"name": "position", "parameterTypes": []},
-      {"name": "remaining", "parameterTypes": []}
+      {"name": "remaining", "parameterTypes": []},
+      {"name": "rewind", "parameterTypes": []},
+      {"name": "get", "parameterTypes": ["[B"]}
+    ]
+  },
+  {
+    "name": "java.nio.Buffer",
+    "methods": [
+      {"name": "capacity", "parameterTypes": []},
+      {"name": "position", "parameterTypes": []},
+      {"name": "remaining", "parameterTypes": []},
+      {"name": "rewind", "parameterTypes": []}
     ]
   }
 ]
