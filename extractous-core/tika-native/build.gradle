@@ -92,9 +92,8 @@ graalvmNative {
                     "-march=compatibility", // VERY IMPORTANT to use compatibility flag. If not the libs will use the cpu arch of the build machine and will notwork on other CPUs if distributed
 
                     // GraalVM 25 optimizations
-                    "--strict-image-heap",                // Better memory layout
+                    // Note: --strict-image-heap is now default in GraalVM 25
                     "-H:+UnlockExperimentalVMOptions",
-                    "-H:+UseCompressedReferences",        // Reduce memory usage
                     "-H:+RemoveUnusedSymbols",            // Smaller binary
                     "-H:+ReportExceptionStackTraces"      // Better error messages
             )
