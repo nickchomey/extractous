@@ -411,3 +411,215 @@ impl<'local> JTesseractOcrConfig<'local> {
         Ok(Self { internal: obj })
     }
 }
+
+/// Wrapper for [`JObject`]s that contain `ai.yobix.EmbeddedExtractResult`.
+pub(crate) struct JEmbeddedExtractResult {
+    pub(crate) error_code: u8,
+    pub(crate) error_message: Option<String>,
+    pub(crate) documents: Vec<JEmbeddedDocument>,
+    pub(crate) metadata: Metadata,
+}
+
+impl JEmbeddedExtractResult {
+    pub(crate) fn new<'local>(
+        env: &mut JNIEnv<'local>,
+        obj: JObject<'local>,
+    ) -> ExtractResult<Self> {
+        // Get error code
+        let error_code = jni_call_method(env, &obj, "getErrorCode", "()B", &[])?
+            .b()
+            .unwrap_or(0) as u8;
+
+        // Get error message if error
+        let error_message = if error_code != 0 {
+            let msg_obj = jni_call_method(env, &obj, "getErrorMessage", "()Ljava/lang/String;", &[])?
+                .l()?;
+            if !msg_obj.is_null() {
+                Some(jni_jobject_to_string(env, msg_obj)?)
+            } else {
+                None
+            }
+        } else {
+            None
+        };
+
+        // Get embedded documents list
+        let docs_list = jni_call_method(
+            env,
+            &obj,
+            "getEmbeddedDocuments",
+            "()Ljava/util/List;",
+            &[],
+        )?
+        .l()?;
+
+        // Convert Java List to Vec
+        let size = jni_call_method(env, &docs_list, "size", "()I", &[])?.i()? as usize;
+        let mut documents = Vec::with_capacity(size);
+
+        for i in 0..size {
+            let doc_obj = jni_call_method(
+                env,
+                &docs_list,
+                "get",
+                "(I)Ljava/lang/Object;",
+                &[JValue::from(i as i32)],
+            )?
+            .l()?;
+            documents.push(JEmbeddedDocument::new(env, doc_obj)?);
+        }
+
+        // For now, we'll create empty metadata
+        // TODO: Get metadata from parent document if needed
+        let metadata = Metadata::new();
+
+        Ok(Self {
+            error_code,
+            error_message,
+            documents,
+            metadata,
+        })
+    }
+}
+
+/// Wrapper for `ai.yobix.EmbeddedExtractResult$EmbeddedDocument`
+pub(crate) struct JEmbeddedDocument {
+    pub(crate) resource_name: String,
+    pub(crate) content_type: String,
+    pub(crate) content: Vec<u8>,
+    pub(crate) embedded_relationship_id: Option<String>,
+}
+
+impl JEmbeddedDocument {
+    pub(crate) fn new<'local>(
+        env: &mut JNIEnv<'local>,
+        obj: JObject<'local>,
+    ) -> ExtractResult<Self> {
+        // Get resource name
+        let name_obj = jni_call_method(env, &obj, "getResourceName", "()Ljava/lang/String;", &[])?
+            .l()?;
+        let resource_name = jni_jobject_to_string(env, name_obj)?;
+
+        // Get content type
+        let type_obj = jni_call_method(env, &obj, "getContentType", "()Ljava/lang/String;", &[])?
+            .l()?;
+        let content_type = jni_jobject_to_string(env, type_obj)?;
+
+        // Get content bytes
+        let content_array = jni_call_method(env, &obj, "getContent", "()[B", &[])?.l()?;
+        let content = if !content_array.is_null() {
+            let array = JByteArray::from(content_array);
+            let len = env.get_array_length(&array)?;
+            let mut content = vec![0u8; len as usize];
+            env.get_byte_array_region(&array, 0, cast_slice_mut(&mut content))?;
+            content
+        } else {
+            Vec::new()
+        };
+
+        // Get embedded relationship id
+        let rel_obj = jni_call_method(
+            env,
+            &obj,
+            "getEmbeddedRelationshipId",
+            "()Ljava/lang/String;",
+            &[],
+        )?
+        .l()?;
+        let embedded_relationship_id = if !rel_obj.is_null() {
+            Some(jni_jobject_to_string(env, rel_obj)?)
+        } else {
+            None
+        };
+
+        Ok(Self {
+            resource_name,
+            content_type,
+            content,
+            embedded_relationship_id,
+        })
+    }
+}
+
+/// Wrapper for `ai.yobix.OptimizedEmbeddedExtractor$OptimizedResult`
+pub(crate) struct JOptimizedResult {
+    pub(crate) error_code: u8,
+    pub(crate) error_message: Option<String>,
+    pub(crate) packed_data: Option<Vec<u8>>,
+    pub(crate) document_count: i32,
+}
+
+impl JOptimizedResult {
+    pub(crate) fn new<'local>(
+        env: &mut JNIEnv<'local>,
+        obj: JObject<'local>,
+    ) -> ExtractResult<Self> {
+        // Get error code
+        let error_code = jni_call_method(env, &obj, "getErrorCode", "()B", &[])?
+            .b()
+            .unwrap_or(0) as u8;
+
+        // Get error message if error
+        let error_message = if error_code != 0 {
+            let msg_obj = jni_call_method(env, &obj, "getErrorMessage", "()Ljava/lang/String;", &[])?
+                .l()?;
+            if !msg_obj.is_null() {
+                Some(jni_jobject_to_string(env, msg_obj)?)
+            } else {
+                None
+            }
+        } else {
+            None
+        };
+
+        // Get document count
+        let document_count = jni_call_method(env, &obj, "getDocumentCount", "()I", &[])?.i()?;
+
+        // Get packed data buffer if success
+        let packed_data = if error_code == 0 {
+            let buffer_obj = jni_call_method(
+                env,
+                &obj,
+                "getPackedData",
+                "()Ljava/nio/ByteBuffer;",
+                &[],
+            )?
+            .l()?;
+
+            if !buffer_obj.is_null() {
+                // Get buffer capacity
+                let capacity = jni_call_method(env, &buffer_obj, "capacity", "()I", &[])?.i()?;
+                
+                // Rewind buffer to start
+                jni_call_method(env, &buffer_obj, "rewind", "()Ljava/nio/Buffer;", &[])?;
+
+                // Create byte array and bulk get
+                let array = env.new_byte_array(capacity)?;
+                let array_obj = JObject::from(array);
+                jni_call_method(
+                    env,
+                    &buffer_obj,
+                    "get",
+                    "([B)Ljava/nio/ByteBuffer;",
+                    &[JValue::Object(&array_obj)],
+                )?;
+
+                // Convert to Vec<u8>
+                let mut data = vec![0u8; capacity as usize];
+                env.get_byte_array_region(&JByteArray::from(array_obj), 0, cast_slice_mut(&mut data))?;
+                Some(data)
+            } else {
+                None
+            }
+        } else {
+            None
+        };
+
+        Ok(Self {
+            error_code,
+            error_message,
+            packed_data,
+            document_count,
+        })
+    }
+}

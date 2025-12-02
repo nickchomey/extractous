@@ -8,6 +8,13 @@
         },
         {
             "locales": [
+                "en",
+                "en-US"
+            ],
+            "name": "org.apache.xerces.impl.msg.XMLMessages"
+        },
+        {
+            "locales": [
                 "en-US"
             ],
             "name": "org.apache.xmlbeans.impl.regex.message"
@@ -17,13 +24,6 @@
                 "en-US"
             ],
             "name": "sun.awt.resources.awt"
-        },
-        {
-            "locales": [
-                "en",
-                "en-US"
-            ],
-            "name": "org.apache.xerces.impl.msg.XMLMessages"
         }
     ],
     "jni": [
@@ -5336,6 +5336,9 @@
                 }
             ],
             "type": "sun.security.x509.SubjectKeyIdentifierExtension"
+        },
+        {
+            "type": "jakarta.mail.MessagingException"
         }
     ],
     "resources": [
@@ -5593,6 +5596,9 @@
         },
         {
             "glob": "org/apache/poi/schemas/ooxml/system/ooxml/ctdxfsb26atype.xsb"
+        },
+        {
+            "glob": "org/apache/poi/schemas/ooxml/system/ooxml/ctdxfa3b1type.xsb"
         },
         {
             "glob": "org/apache/poi/schemas/ooxml/system/ooxml/ctempty3fa5type.xsb"
@@ -6147,6 +6153,9 @@
         },
         {
             "type": "java.util.concurrent.locks.ReentrantLock$Sync"
+        },
+        {
+            "type": "[Lorg.openxmlformats.schemas.spreadsheetml.x2006.main.CTDxf;"
         }
     ]
 }
