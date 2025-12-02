@@ -4,7 +4,7 @@ plugins {
 }
 
 
-def tikaVersion = "2.9.2"
+def tikaVersion = "3.2.3"
 def numThreads = Runtime.getRuntime().availableProcessors()
 def currentOs = org.gradle.internal.os.OperatingSystem.current()
 
@@ -31,7 +31,7 @@ dependencies {
     implementation("org.slf4j:slf4j-nop:2.0.11")
     // Some dependencies use log4j such as poi, route log4j back to slf4j
     // Had to use 3.0.0-beta2 because it is solves some issues with log4j to make it graalvm native friendly
-    implementation 'org.apache.logging.log4j:log4j-to-slf4j:3.0.0-beta2'
+    implementation 'org.apache.logging.log4j:log4j-to-slf4j:2.24.1'
 
     implementation("org.apache.tika:tika-core:$tikaVersion")
     implementation "org.apache.tika:tika-parsers-standard:$tikaVersion" // Apache Tika parsers
@@ -44,10 +44,15 @@ dependencies {
     implementation "org.apache.tika:tika-parser-cad-module:$tikaVersion"
     implementation "org.apache.tika:tika-parser-crypto-module:$tikaVersion"
     implementation "org.apache.tika:tika-parser-font-module:$tikaVersion"
-    implementation "org.apache.tika:tika-parser-html-commons:$tikaVersion"
+    // implementation "org.apache.tika:tika-parser-html-commons:$tikaVersion" // Removed in Tika 3.x
     implementation "org.apache.tika:tika-parser-image-module:$tikaVersion"
     implementation "org.apache.tika:tika-parser-mail-module:$tikaVersion"
     implementation "org.apache.tika:tika-parser-miscoffice-module:$tikaVersion"
+
+    // Jakarta Mail dependencies for Tika 3.x
+    implementation 'jakarta.mail:jakarta.mail-api:2.1.3'
+    implementation 'org.eclipse.angus:angus-mail:2.0.3'
+
     implementation "org.apache.tika:tika-parser-news-module:$tikaVersion"
     implementation "org.apache.tika:tika-parser-ocr-module:$tikaVersion"
     implementation "org.apache.tika:tika-parser-pkg-module:$tikaVersion"

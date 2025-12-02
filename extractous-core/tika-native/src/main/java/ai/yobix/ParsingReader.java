@@ -77,7 +77,7 @@ public class ParsingReader extends Reader {
 
         public void run() {
             try {
-                ContentHandler handler = outputXml ? new ToXMLContentHandler(pipedOutputStream, encoding) : new BodyContentHandler(pipedOutputStream);
+                ContentHandler handler = outputXml ? new ToXMLContentHandler(pipedOutputStream, encoding) : new BodyContentHandler(new java.io.OutputStreamWriter(pipedOutputStream, encoding));
                 parser.parse(stream, handler, metadata, context);
             } catch (Throwable t) {
                 throwable = t;

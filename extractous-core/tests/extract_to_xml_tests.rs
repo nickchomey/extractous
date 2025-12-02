@@ -25,7 +25,7 @@ fn extract_p_tag_content(xml: &str) -> String {
                 inside_body = false;
             }
             Ok(Event::Text(e)) if inside_body => {
-                collected_content.push_str(&e.unescape().unwrap().into_owned());
+                collected_content.push_str(&quick_xml::escape::unescape(std::str::from_utf8(&e).unwrap()).unwrap());
                 collected_content.push('\n'); // Separate paragraphs with newline
             }
             Ok(Event::Eof) => break,
