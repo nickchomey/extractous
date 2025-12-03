@@ -131,7 +131,8 @@ pub mod web {
                 }
                 Ok(Event::Text(e)) => {
                     if !in_script_or_style {
-                        text.push_str(&e.unescape().unwrap_or_default());
+                        let decoded = std::str::from_utf8(&e).unwrap_or_default();
+                        text.push_str(&quick_xml::escape::unescape(decoded).unwrap_or_default());
                         text.push(' ');
                     }
                 }
@@ -167,11 +168,13 @@ pub mod web {
         loop {
             match reader.read_event_into(&mut buf) {
                 Ok(Event::Text(e)) => {
-                    text.push_str(&e.unescape().unwrap_or_default());
+                    let decoded = std::str::from_utf8(&e).unwrap_or_default();
+                    text.push_str(&quick_xml::escape::unescape(decoded).unwrap_or_default());
                     text.push(' ');
                 }
                 Ok(Event::CData(e)) => {
-                    text.push_str(&e.escape().unwrap_or_default());
+                    let decoded = std::str::from_utf8(&e).unwrap_or_default();
+                    text.push_str(&quick_xml::escape::escape(decoded));
                     text.push(' ');
                 }
                 Ok(Event::Eof) => break,
