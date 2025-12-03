@@ -313,14 +313,17 @@ pub fn install_graalvm_ce(install_dir: &PathBuf) -> PathBuf {
         };
         (url, "tar.gz", dir)
     } else {
-        let url = if cfg!(target_arch = "x86_64") {
-            "https://github.com/graalvm/graalvm-ce-builds/releases/download/jdk-23.0.1/graalvm-community-jdk-23.0.1_linux-x64_bin.tar.gz"
+        // Use Bellsoft Liberica NIK for Linux to get proper AWT support
+        let (url, dir) = if cfg!(target_arch = "x86_64") {
+            ("https://download.bell-sw.com/vm/24.1.1/bellsoft-liberica-vm-full-openjdk23.0.1+13-24.1.1+1-linux-amd64.tar.gz",
+             "bellsoft-liberica-vm-full-openjdk23-24.1.1")
         } else if cfg!(target_arch = "aarch64") {
-            "https://github.com/graalvm/graalvm-ce-builds/releases/download/jdk-23.0.1/graalvm-community-jdk-23.0.1_linux-aarch64_bin.tar.gz"
+            ("https://download.bell-sw.com/vm/24.1.1/bellsoft-liberica-vm-full-openjdk23.0.1+13-24.1.1+1-linux-aarch64.tar.gz",
+             "bellsoft-liberica-vm-full-openjdk23-24.1.1")
         } else {
             panic!("Unsupported linux architecture");
         };
-        (url, "tar.gz", "graalvm-community-openjdk-23.0.1+11.1")
+        (url, "tar.gz", dir)
     };
 
     let graalvm_home = install_dir.join(main_dir);

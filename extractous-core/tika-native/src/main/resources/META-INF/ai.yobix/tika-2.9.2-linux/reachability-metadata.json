@@ -485,6 +485,9 @@
                 },
                 {
                     "name": "transparency"
+                },
+                {
+                    "name": "pData"
                 }
             ],
             "methods": [
