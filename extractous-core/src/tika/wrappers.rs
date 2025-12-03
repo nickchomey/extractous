@@ -4,21 +4,29 @@ use crate::tika::jni_utils::{
     jni_tika_metadata_to_rust_metadata,
 };
 use crate::tika::vm;
-use crate::{Metadata, OfficeParserConfig, PdfParserConfig, TesseractOcrConfig, DEFAULT_BUF_SIZE};
+use crate::{DEFAULT_BUF_SIZE, Metadata, OfficeParserConfig, PdfParserConfig, TesseractOcrConfig};
 use bytemuck::cast_slice_mut;
 use jni::objects::{GlobalRef, JByteArray, JObject, JValue};
 use jni::sys::jsize;
 use jni::{AttachGuard, JNIEnv};
 
-/// Wrapper for [`JObject`]s that contain `org.apache.commons.io.input.ReaderInputStream`
+/// Optimized wrapper for [`JObject`]s that contain `org.apache.commons.io.input.ReaderInputStream`
 /// It saves a GlobalRef to the java object, which is cleared when the last GlobalRef is dropped
 /// Implements [`Drop] trait to properly close the `org.apache.commons.io.input.ReaderInputStream`
+///
+/// Performance optimizations:
+/// - Larger default buffer size for better throughput
+/// - Adaptive buffer sizing based on read patterns
+/// - Reduced JNI calls through buffer reuse
 pub struct JReaderInputStream {
     internal: GlobalRef,
     buffer: GlobalRef,
     capacity: jsize,
     #[cfg(feature = "stream-attachguard")]
     _guard: AttachGuard<'static>,
+    // Track read patterns for adaptive buffer sizing
+    total_reads: usize,
+    large_reads: usize,
 }
 
 impl JReaderInputStream {
@@ -33,6 +41,8 @@ impl JReaderInputStream {
             capacity,
             #[cfg(feature = "stream-attachguard")]
             _guard: guard,
+            total_reads: 0,
+            large_reads: 0,
         })
     }
 
@@ -41,17 +51,34 @@ impl JReaderInputStream {
 
         let length = buf.len() as jsize;
 
-        if length > self.capacity {
-            // Create the new byte array with the new capacity
+        // Track read patterns for adaptive buffer sizing
+        self.total_reads += 1;
+        if length > DEFAULT_BUF_SIZE as jsize {
+            self.large_reads += 1;
+        }
+
+        // More aggressive adaptive buffer sizing for better performance
+        let optimal_capacity = if self.total_reads > 5 && self.large_reads > self.total_reads / 3 {
+            // More than 33% of reads are large, use 3x buffer size for better throughput
+            (length * 3).max(DEFAULT_BUF_SIZE as jsize * 2)
+        } else if self.total_reads > 20 {
+            // After many reads, use at least 2x default buffer size
+            length.max(DEFAULT_BUF_SIZE as jsize * 2)
+        } else {
+            length.max(self.capacity)
+        };
+
+        if optimal_capacity > self.capacity {
+            // Create the new byte array with the optimal capacity
             let jbyte_array = env
-                .new_byte_array(length as jsize)
+                .new_byte_array(optimal_capacity)
                 .map_err(|_e| Error::JniEnvCall("Failed to create byte array"))?;
 
             self.buffer = env
                 .new_global_ref(jbyte_array)
                 .map_err(|_e| Error::JniEnvCall("Failed to create global reference"))?;
 
-            self.capacity = length;
+            self.capacity = optimal_capacity;
         }
 
         // // Create the java byte array
@@ -432,8 +459,8 @@ impl JEmbeddedExtractResult {
 
         // Get error message if error
         let error_message = if error_code != 0 {
-            let msg_obj = jni_call_method(env, &obj, "getErrorMessage", "()Ljava/lang/String;", &[])?
-                .l()?;
+            let msg_obj =
+                jni_call_method(env, &obj, "getErrorMessage", "()Ljava/lang/String;", &[])?.l()?;
             if !msg_obj.is_null() {
                 Some(jni_jobject_to_string(env, msg_obj)?)
             } else {
@@ -444,14 +471,8 @@ impl JEmbeddedExtractResult {
         };
 
         // Get embedded documents list
-        let docs_list = jni_call_method(
-            env,
-            &obj,
-            "getEmbeddedDocuments",
-            "()Ljava/util/List;",
-            &[],
-        )?
-        .l()?;
+        let docs_list =
+            jni_call_method(env, &obj, "getEmbeddedDocuments", "()Ljava/util/List;", &[])?.l()?;
 
         // Convert Java List to Vec
         let size = jni_call_method(env, &docs_list, "size", "()I", &[])?.i()? as usize;
@@ -496,13 +517,13 @@ impl JEmbeddedDocument {
         obj: JObject<'local>,
     ) -> ExtractResult<Self> {
         // Get resource name
-        let name_obj = jni_call_method(env, &obj, "getResourceName", "()Ljava/lang/String;", &[])?
-            .l()?;
+        let name_obj =
+            jni_call_method(env, &obj, "getResourceName", "()Ljava/lang/String;", &[])?.l()?;
         let resource_name = jni_jobject_to_string(env, name_obj)?;
 
         // Get content type
-        let type_obj = jni_call_method(env, &obj, "getContentType", "()Ljava/lang/String;", &[])?
-            .l()?;
+        let type_obj =
+            jni_call_method(env, &obj, "getContentType", "()Ljava/lang/String;", &[])?.l()?;
         let content_type = jni_jobject_to_string(env, type_obj)?;
 
         // Get content bytes
@@ -561,8 +582,8 @@ impl JOptimizedResult {
 
         // Get error message if error
         let error_message = if error_code != 0 {
-            let msg_obj = jni_call_method(env, &obj, "getErrorMessage", "()Ljava/lang/String;", &[])?
-                .l()?;
+            let msg_obj =
+                jni_call_method(env, &obj, "getErrorMessage", "()Ljava/lang/String;", &[])?.l()?;
             if !msg_obj.is_null() {
                 Some(jni_jobject_to_string(env, msg_obj)?)
             } else {
@@ -577,19 +598,13 @@ impl JOptimizedResult {
 
         // Get packed data buffer if success
         let packed_data = if error_code == 0 {
-            let buffer_obj = jni_call_method(
-                env,
-                &obj,
-                "getPackedData",
-                "()Ljava/nio/ByteBuffer;",
-                &[],
-            )?
-            .l()?;
+            let buffer_obj =
+                jni_call_method(env, &obj, "getPackedData", "()Ljava/nio/ByteBuffer;", &[])?.l()?;
 
             if !buffer_obj.is_null() {
                 // Get buffer capacity
                 let capacity = jni_call_method(env, &buffer_obj, "capacity", "()I", &[])?.i()?;
-                
+
                 // Rewind buffer to start
                 jni_call_method(env, &buffer_obj, "rewind", "()Ljava/nio/Buffer;", &[])?;
 
@@ -606,7 +621,11 @@ impl JOptimizedResult {
 
                 // Convert to Vec<u8>
                 let mut data = vec![0u8; capacity as usize];
-                env.get_byte_array_region(&JByteArray::from(array_obj), 0, cast_slice_mut(&mut data))?;
+                env.get_byte_array_region(
+                    &JByteArray::from(array_obj),
+                    0,
+                    cast_slice_mut(&mut data),
+                )?;
                 Some(data)
             } else {
                 None
