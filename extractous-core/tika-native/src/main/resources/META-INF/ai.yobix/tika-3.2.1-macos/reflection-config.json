@@ -1,6 +1,10 @@
 [
-  { "name": "org.openxmlformats.schemas.spreadsheetml.x2006.main.impl.CTDxfImpl" },
-  { "name": "[Lorg.openxmlformats.schemas.spreadsheetml.x2006.main.impl.CTDxfImpl;" },
+  {
+    "name": "org.openxmlformats.schemas.spreadsheetml.x2006.main.impl.CTDxfImpl"
+  },
+  {
+    "name": "[Lorg.openxmlformats.schemas.spreadsheetml.x2006.main.impl.CTDxfImpl;"
+  },
   {
     "name": "ai.yobix.EmbeddedExtractResult",
     "allDeclaredFields": true,
@@ -25,7 +29,7 @@
     "allPublicMethods": true
   },
   {
-    "name": "java.nio.DirectByteBuffer", 
+    "name": "java.nio.DirectByteBuffer",
     "allDeclaredMethods": true,
     "allPublicMethods": true
   },
